@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
-class Pagina1Page extends StatelessWidget {
+import 'package:estados/models/usuario.dart';
+import 'package:estados/services/usuario_service.dart';
 
+class Pagina1Page extends StatelessWidget {
   const Pagina1Page({Key? key}) : super(key: key);
 
   @override
@@ -10,44 +12,50 @@ class Pagina1Page extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Pagina 1'),
       ),
-      body: const InformacionUsuario(),
-     floatingActionButton: FloatingActionButton(
-      child: const Icon(Icons.accessibility_new),
-      onPressed: () => Navigator.pushNamed(context, 'pagina2')
-    ),
-   );
+      body: StreamBuilder(
+        stream: usuarioService.usuarioStream,
+        builder: (BuildContext context, AsyncSnapshot<Usuario> snapshot) {
+          return snapshot.hasData
+            // ? InformacionUsuario(usuarioService.usuario!)
+            ? InformacionUsuario(snapshot.data!)
+            : const Center(
+                child: Text('No hay información del usuario'),
+              );
+        },
+      ),
+      floatingActionButton: FloatingActionButton(
+          child: const Icon(Icons.accessibility_new),
+          onPressed: () => Navigator.pushNamed(context, 'pagina2')),
+    );
   }
 }
 
 class InformacionUsuario extends StatelessWidget {
-  const InformacionUsuario({
-    super.key,
-  });
+  const InformacionUsuario(this.usuario, {super.key});
+
+  final Usuario usuario;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
-      height: double.infinity,
-      padding: const EdgeInsets.all(20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          Text('General', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          Divider(),
-
-          ListTile(title: Text('Nombre: ')),
-          ListTile(title: Text('Edad: ')),
-
-          Text('Profesiones', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          Divider(),
-
-          ListTile(title: Text('Profesion 1')),
-          ListTile(title: Text('Profesion 2')),
-          ListTile(title: Text('Profesion 3')),
-
-        ],
-      )
-    );
+        width: double.infinity,
+        height: double.infinity,
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('General',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Divider(),
+            ListTile(title: Text('Nombre: ${usuario.nombre}')),
+            ListTile(title: Text('Edad: ${usuario.edad}')),
+            const Text('Profesiones',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            const Divider(),
+            const ListTile(title: Text('Profesion 1')),
+            const ListTile(title: Text('Profesion 2')),
+            const ListTile(title: Text('Profesion 3')),
+          ],
+        ));
   }
 }
